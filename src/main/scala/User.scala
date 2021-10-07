@@ -1,0 +1,1 @@
+case class User(first: String, last: String, username: String, password: String, id: Option[Int] = None)

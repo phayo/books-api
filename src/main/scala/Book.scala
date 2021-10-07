@@ -1,0 +1,1 @@
+case class Book(title: String, author: String, year: Int, publisher: String = "", id: Option[Int] = None)
