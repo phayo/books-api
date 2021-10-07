@@ -1,4 +1,5 @@
 import com.twitter.finagle.http.{Request, Response, Status}
+import com.github.t3hnar.bcrypt._
 import org.apache.commons.codec.binary.Base64
 import slick.jdbc.H2Profile.api._
 import wvlet.airframe.http.{Endpoint, HttpMethod}
@@ -55,8 +56,8 @@ trait RoutingService{
         val authDecoded = new String(Base64.decodeBase64(x.substring(5).getBytes)).split(":")
         val username = authDecoded(0)
         val password = authDecoded(1)
-        val query = for(u <- users if u.username.toLowerCase === username.toLowerCase && u.password === password ) yield u
-        db.run(query.result).map(s => if (s.isEmpty) throw UnAuthorizedException("Login failed") else s).map(a => Response(Status.Ok))
+        val query = for(u <- users if u.username.toLowerCase === username.toLowerCase) yield u
+        db.run(query.result).map(s => if (s.isEmpty || !password.isBcrypted(s.head.password)) throw UnAuthorizedException("Login failed") else s).map(a => Response(Status.Ok))
       case None => throw UnAuthorizedException("Login Failed")
     }
   }
@@ -73,7 +74,7 @@ trait RoutingService{
     db.run(query.result).map(rs => if (rs.nonEmpty) throw new IllegalArgumentException("username is already taken"))
 
     db.run(DBIO.seq(
-      users += newUser
+      users += User(newUser.first, newUser.last, newUser.username, newUser.password.bcrypt)
     ))
 
     Response(Status.Created)

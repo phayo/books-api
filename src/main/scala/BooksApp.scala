@@ -1,3 +1,4 @@
+import com.github.t3hnar.bcrypt._
 import com.twitter.app.{App, Flag, Flaggable}
 import slick.jdbc.H2Profile.api._
 import wvlet.airframe.http.Router
@@ -38,31 +39,29 @@ object BooksApp extends App{
 
     val db = Database.forConfig("h2mem1")
 
-    try {
-      val books = TableQuery[Books]
-      val users = TableQuery[Users]
-      val setup = DBIO.seq(
-        // Create the tables, including primary and foreign keys
-        (books.schema ++ users.schema).create,
+    val books = TableQuery[Books]
+    val users = TableQuery[Users]
+    val setup = DBIO.seq(
+      // Create the tables, including primary and foreign keys
+      (books.schema ++ users.schema).create,
 
-        // Insert some books
-        books += Book("The Lord of the Rings ", "JRR Tolkien", 1954, "Allen & Unwin"),
-        books += Book("Rich Dad Poor Dad", "Robert T. Kiyosaki", 1997, "Warner Books"),
-        books += Book("The Notebook", "Nicholas Sparks", 1996, "Warner Books"),
-        books += Book("My Life in Red and White", "Arsene Wenger", 2020, "Chronicle Prism"),
-        books += Book("A Promised Land", "Barrack Obama", 2020, "Crown"),
-        books += Book("Things Fall Apart", "Chinua Achebe", 1958, "William Heinemann Ltd"),
-        books += Book("Purple Hibiscus", "Chimamanda Ngozi Adichie", 2003, "Algonquin Books Kachifo Limited"),
+      // Insert some books
+      books += Book("The Lord of the Rings ", "JRR Tolkien", 1954, "Allen & Unwin"),
+      books += Book("Rich Dad Poor Dad", "Robert T. Kiyosaki", 1997, "Warner Books"),
+      books += Book("The Notebook", "Nicholas Sparks", 1996, "Warner Books"),
+      books += Book("My Life in Red and White", "Arsene Wenger", 2020, "Chronicle Prism"),
+      books += Book("A Promised Land", "Barrack Obama", 2020, "Crown"),
+      books += Book("Things Fall Apart", "Chinua Achebe", 1958, "William Heinemann Ltd"),
+      books += Book("Purple Hibiscus", "Chimamanda Ngozi Adichie", 2003, "Algonquin Books Kachifo Limited"),
 
-        users += User("Chukwuebuka", "Anazodo", "chuk", "123456"),
-        users += User("Mahya", "Mirtar", "mahya", "abcdef")
-      )
-      val setupFuture = db.run(setup)
+      users += User("Chukwuebuka", "Anazodo", "chuk", "123456".bcrypt),
+      users += User("Mahya", "Mirtar", "mahya", "abcdef".bcrypt)
+    )
+    val setupFuture = db.run(setup)
 
-      service.start { server =>
-        // The customized server will start here
-        server.waitServerTermination
-      }
+    service.start { server =>
+      // The customized server will start here
+      server.waitServerTermination
     }
 
     //finally db.close

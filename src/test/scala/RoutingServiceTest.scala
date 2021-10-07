@@ -1,7 +1,7 @@
+import com.github.t3hnar.bcrypt._
 import com.twitter.finagle.http
 import com.twitter.finagle.http.Status
 import org.apache.commons.codec.binary.Base64
-import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -30,10 +30,9 @@ class RoutingServiceTest extends AnyWordSpec with Matchers with RoutingService w
       books += Book("Rich Dad Poor Dad", "Robert T. Kiyosaki", 1997, "Warner Books"),
 
 
-      users += User("Chukwuebuka", "Anazodo", "chuk", "123456"),
-      users += User("Mahya", "Mirtar", "mahya", "abcdef")
+      users += User("Chukwuebuka", "Anazodo", "chuk", "123456".bcrypt),
+      users += User("Mahya", "Mirtar", "mahya", "abcdef".bcrypt)
     )
-
     db.run(setup)
   }
 

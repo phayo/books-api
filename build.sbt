@@ -23,3 +23,5 @@ libraryDependencies += "org.wvlet.airframe" %% "airspec" % "21.9.0" % "test"
 testFrameworks += new TestFramework("wvlet.airspec.Framework")
 
 libraryDependencies += "org.scalamock" %% "scalamock" % "5.1.0" % Test
+
+libraryDependencies += "com.github.t3hnar" %% "scala-bcrypt" % "4.1"
