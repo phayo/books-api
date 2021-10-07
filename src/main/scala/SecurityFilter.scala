@@ -31,18 +31,18 @@ class SecurityFilter extends SimpleFilter[Request, Response]{
     }
   }
 
-  private def generateAuth(username: String): String = {
+  protected def generateAuth(username: String): String = {
     val now = System.currentTimeMillis() + (authValid * 60 * 1000)
     encryptUtil.encrypt(username + separator + now)
   }
 
-  private def loginValid(auth: String): Boolean = encryptUtil.decrypt(auth) match {
+  protected def loginValid(auth: String): Boolean = encryptUtil.decrypt(auth) match {
       case Success(value) =>
         value.split(separator)(1).toLong > System.currentTimeMillis()
       case Failure(_) => false
     }
 
-  private def registerService(request: Request, service: Service[Request, Response]): Future[Response] = {
+  protected def registerService(request: Request, service: Service[Request, Response]): Future[Response] = {
     val response  = service(request)
     val user = mapper.readValue(request.getContentString(), new TypeReference[User] {})
     response.map(res => {
@@ -53,7 +53,7 @@ class SecurityFilter extends SimpleFilter[Request, Response]{
     })
   }
 
-  private def loginService(request: Request, service: Service[Request, Response]): Future[Response] = {
+  protected def loginService(request: Request, service: Service[Request, Response]): Future[Response] = {
     request.authorization match {
       case Some(value) => service(request).map(res => {
         val username = new String(Base64.decodeBase64(value.substring(5).getBytes)).split(":")(0)
@@ -66,7 +66,7 @@ class SecurityFilter extends SimpleFilter[Request, Response]{
     }
   }
 
-  def validateService(request: Request, service: Service[Request, Response]): Future[Response] = {
+  protected def validateService(request: Request, service: Service[Request, Response]): Future[Response] = {
     request.authorization match {
       case Some(x) => if  (loginValid(x.substring(5))) service(request) else throw UnAuthorizedException("Please login to continue")
       case None => throw UnAuthorizedException("Please login to continue")
