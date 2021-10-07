@@ -7,7 +7,7 @@ import com.twitter.util.Future
 import com.typesafe.config.ConfigFactory
 import org.apache.commons.codec.binary.Base64
 
-import scala.util.{Failure, Success}
+import scala.util.{Try,Failure, Success}
 
 class SecurityFilter extends SimpleFilter[Request, Response]{
   private val keyConfig = ConfigFactory.load("application.conf").getConfig("encryption")
@@ -15,7 +15,7 @@ class SecurityFilter extends SimpleFilter[Request, Response]{
   private val encryptKeyBase64 = keyConfig.getString("key")
   private val encryptIVBase64 = keyConfig.getString("iv")
   private val encryptUtil = EncryptionUtil(encryptKeyBase64, encryptIVBase64)
-  private val separator = "--"
+  private val separator = ConfigFactory.load("application.conf").getString("authSeparator")
   private val mapper = JsonMapper.builder()
     .addModule(DefaultScalaModule)
     .build()
@@ -38,7 +38,10 @@ class SecurityFilter extends SimpleFilter[Request, Response]{
 
   protected def loginValid(auth: String): Boolean = encryptUtil.decrypt(auth) match {
       case Success(value) =>
-        value.split(separator)(1).toLong > System.currentTimeMillis()
+        Try(value.split(separator)(1).toLong) match {
+          case Success(value) => value > System.currentTimeMillis()
+          case Failure(_) => false
+        }
       case Failure(_) => false
     }
 

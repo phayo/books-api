@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 
 
-class RoutingServiceTest extends AnyWordSpec with MockFactory with Matchers with RoutingService with BeforeAndAfterAll {
+class RoutingServiceTest extends AnyWordSpec with Matchers with RoutingService with BeforeAndAfterAll {
   val db = Database.forConfig("h2mem1")
   val books = TableQuery[Books]
   val users = TableQuery[Users]
