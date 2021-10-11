@@ -52,6 +52,7 @@ object BooksApp extends App{
       books += Book("My Life in Red and White", "Arsene Wenger", 2020, "Chronicle Prism"),
       books += Book("A Promised Land", "Barrack Obama", 2020, "Crown"),
       books += Book("Things Fall Apart", "Chinua Achebe", 1958, "William Heinemann Ltd"),
+      books += Book("Things Fall Apart - 2nd Edition", "Chinua Achebe", 1959, "William Heinemann Ltd"),
       books += Book("Purple Hibiscus", "Chimamanda Ngozi Adichie", 2003, "Algonquin Books Kachifo Limited"),
 
       users += User("Chukwuebuka", "Anazodo", "chuk", "123456".bcrypt),

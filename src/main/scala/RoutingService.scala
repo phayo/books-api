@@ -38,7 +38,7 @@ trait RoutingService{
   }
 
   @Endpoint(method = HttpMethod.POST, path = "/me/books/upload")
-  def uploadBook(book: Book): Future[Book] = {
+  def uploadBook(book: Book): Future[Book] =  {
     require(Option(book.title).exists(!_.isBlank), "Book title must not be empty")
     require(Option(book.author).exists(!_.isBlank), "Book author must not be empty")
     require(Option(book.year).exists(_ > 0), "Book year is required")
